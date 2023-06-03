@@ -1,7 +1,9 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using JotSpot.Api.Endpoints;
+
+var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.AddRootEndpoints();
 
 app.Run();
 
