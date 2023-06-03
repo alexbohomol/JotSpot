@@ -5,6 +5,10 @@ VisualStudioVersion = 25.0.1706.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotSpot.Api", "JotSpot.Api\JotSpot.Api.csproj", "{813D6A4E-C3C1-45F6-8C43-069210EC0DA8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A10604C8-03F7-4AD5-BA5D-A956E3E56392}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7EB22F77-432E-421D-A85D-DD1DCC4E32EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,5 +25,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4EA6BBD3-CD37-4646-95B3-A651B6F96D78}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{813D6A4E-C3C1-45F6-8C43-069210EC0DA8} = {7EB22F77-432E-421D-A85D-DD1DCC4E32EA}
 	EndGlobalSection
 EndGlobal
