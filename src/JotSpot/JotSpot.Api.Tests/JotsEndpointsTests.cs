@@ -7,8 +7,10 @@ public class JotsEndpointsTests : IntegrationTest
     [Fact]
     public async Task GetJots_ReturnsOk_EmptyList()
     {
+        // Act
         var msg = await SutClient.GetAsync("jots");
 
+        // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
         msg.Content.Should().NotBeNull();
         
@@ -19,61 +21,70 @@ public class JotsEndpointsTests : IntegrationTest
     [Fact]
     public async Task PostJot_ReturnsCreated()
     {
+        // Arrange
         var request = new Jots.Request("test title", "test text");
 
-        var (msg, created) = await CreateJot(request);
+        // Act
+        var (msg, created) = await CreateJotAsync(request);
         
+        // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.Created);
         msg.Content.Should().NotBeNull();
         
-        created.Should().NotBeNull();
-        created!.Id.Should().NotBeEmpty();
-        created!.Title.Should().Be(request.Title);
-        created!.Text.Should().Be(request.Text);
-        
         msg.Headers.Location.Should().NotBeNull();
-        msg.Headers.Location!.Should().BeOfType<Uri>();
+        msg.Headers.Location.Should().BeOfType<Uri>();
         msg.Headers.Location!.OriginalString.Should().Contain(created.Id.ToString());
+        
+        created.Should().NotBeNull();
+        created.Id.Should().NotBeEmpty();
+        created.Should().BeEquivalentTo(request);
     }
     
     [Fact]
     public async Task GetJot_ReturnsAvailableJot()
     {
+        // Arrange
         var request = new Jots.Request("test title", "test text");
-        var (_, created) = await CreateJot(request);
+        var (_, created) = await CreateJotAsync(request);
 
-        var msg = await SutClient.GetAsync($"jots/{created.Id}");
+        // Act
+        var (msg, jot) = await GetJotByIdAsync(created.Id);
+        
+        // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
         msg.Content.Should().NotBeNull();
-
-        var jot = await msg.Content.ReadFromJsonAsync<Jots.Response>();
+        
         jot.Should().NotBeNull();
-        jot!.Id.Should().NotBeEmpty();
-        jot!.Title.Should().Be(request.Title);
-        jot!.Text.Should().Be(request.Text);
+        jot.Should().BeEquivalentTo(request);
+        jot.Id.Should().Be(created.Id);
     }
     
     [Fact]
     public async Task GetJot_ReturnsNotFound()
     {
-        var msg = await SutClient.GetAsync($"jots/{Guid.Empty}");
+        // Act
+        var (msg, jot) = await GetJotByIdAsync(Guid.Empty);
+        
+        // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
         msg.Content.Should().NotBeNull();
-        
-        var body = await msg.Content.ReadAsStringAsync();
-        body.Should().BeEmpty();
+        jot.Should().BeNull();
     }
     
     [Fact]
     public async Task DeleteJot_DeletesAvailableJot()
     {
+        // Arrange
         var request = new Jots.Request("test title", "test text");
-        var (_, created) = await CreateJot(request);
+        var (_, created) = await CreateJotAsync(request);
 
-        var getMsg = await SutClient.GetAsync($"jots/{created.Id}");
+        var (getMsg, _) = await GetJotByIdAsync(created.Id);
         getMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         
+        // Act
         var delMsg = await SutClient.DeleteAsync($"jots/{created.Id}");
+        
+        // Assert
         delMsg.StatusCode.Should().Be(HttpStatusCode.NoContent);
         delMsg.Content.Should().NotBeNull();
         var body = await delMsg.Content.ReadAsStringAsync();
@@ -87,10 +98,12 @@ public class JotsEndpointsTests : IntegrationTest
     [Fact]
     public async Task DeleteJot_ReturnsNotFound()
     {
+        // Act
         var msg = await SutClient.DeleteAsync($"jots/{Guid.Empty}");
+        
+        // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
         msg.Content.Should().NotBeNull();
-        
         var body = await msg.Content.ReadAsStringAsync();
         body.Should().BeEmpty();
     }
@@ -98,47 +111,52 @@ public class JotsEndpointsTests : IntegrationTest
     [Fact]
     public async Task PutJot_UpdatesAvailableJot()
     {
-        var request = new Jots.Request("initial title", "initial text");
-        var (_, created) = await CreateJot(request);
+        // Arrange
+        var initial = new Jots.Request("initial title", "initial text");
+        
+        var (pstMsg, created) = await CreateJotAsync(initial);
+        pstMsg.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var getMsg = await SutClient.GetAsync($"jots/{created.Id}");
+        var (getMsg, _) = await GetJotByIdAsync(created.Id);
         getMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var update = new Jots.Request("updated title", "updated text");
+        
+        // Act
         var putMsg = await SutClient.PutAsync($"jots/{created.Id}", JsonContent.Create(update));
+        
+        // Assert
         putMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         putMsg.Content.Should().NotBeNull();
-
+        
         var updated = await putMsg.Content.ReadFromJsonAsync<Jots.Response>();
         updated.Should().NotBeNull();
+        updated.Should().BeEquivalentTo(update);
         updated!.Id.Should().NotBeEmpty();
-        updated!.Title.Should().Be(update.Title);
-        updated!.Text.Should().Be(update.Text);
-        
-        var chkMsg = await SutClient.GetAsync($"jots/{updated.Id}");
+
+        var (chkMsg, retrieved) = await GetJotByIdAsync(updated.Id);
         chkMsg.StatusCode.Should().Be(HttpStatusCode.OK);
-        
-        var retrieved = await chkMsg.Content.ReadFromJsonAsync<Jots.Response>();
         retrieved.Should().NotBeNull();
-        retrieved!.Id.Should().Be(updated.Id);
-        retrieved!.Title.Should().Be(updated.Title);
-        retrieved!.Text.Should().Be(updated.Text);
+        retrieved.Should().BeEquivalentTo(updated);
     }
     
     [Fact]
     public async Task PutJot_ReturnsNotFound()
     {
+        // Assert
         var request = new Jots.Request("initial title", "initial text");
         
+        // Act
         var msg = await SutClient.PutAsync($"jots/{Guid.Empty}", JsonContent.Create(request));
+        
+        // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
         msg.Content.Should().NotBeNull();
-        
         var body = await msg.Content.ReadAsStringAsync();
         body.Should().BeEmpty();
     }
 
-    private async Task<(HttpResponseMessage, Jots.Response)> CreateJot(Jots.Request request)
+    private async Task<(HttpResponseMessage, Jots.Response)> CreateJotAsync(Jots.Request request)
     {
         var message = await SutClient.PostAsJsonAsync("jots", request);
         
@@ -146,17 +164,15 @@ public class JotsEndpointsTests : IntegrationTest
 
         return (message, created!);
     }
+
+    private async Task<(HttpResponseMessage, Jots.Response)> GetJotByIdAsync(Guid id)
+    {
+        var message = await SutClient.GetAsync($"jots/{id}");
+
+        var jot = message.IsSuccessStatusCode 
+            ? await message.Content.ReadFromJsonAsync<Jots.Response>()
+            : null;
+        
+        return (message, jot!);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
