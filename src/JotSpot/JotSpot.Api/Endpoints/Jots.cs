@@ -6,7 +6,7 @@ public static class Jots
     
     public static void AddJotsEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/jots", Array.Empty<Response>);
+        app.MapGet("/jots", () => JotStore.ToArray());
         
         app.MapPost("/jots", (Request request) =>
         {

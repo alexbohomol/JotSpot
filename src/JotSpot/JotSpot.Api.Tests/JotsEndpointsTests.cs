@@ -19,6 +19,26 @@ public class JotsEndpointsTests : IntegrationTest
     }
 
     [Fact]
+    public async Task GetJots_ReturnsOk_ListOfJots()
+    {
+        // Arrange
+        var (_, jot1) = await CreateJotAsync(new Jots.Request("title #1", "text #1"));
+        var (_, jot2) = await CreateJotAsync(new Jots.Request("title #2", "text #2"));
+        var (_, jot3) = await CreateJotAsync(new Jots.Request("title #3", "text #3"));
+        
+        // Act
+        var msg = await SutClient.GetAsync("jots");
+
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.OK);
+        msg.Content.Should().NotBeNull();
+        
+        var jots = await msg.Content.ReadFromJsonAsync<Jots.Response[]>();
+        jots.Should().HaveCount(3);
+        jots.Should().Contain(new[] { jot1, jot2, jot3 });
+    }
+
+    [Fact]
     public async Task PostJot_ReturnsCreated()
     {
         // Arrange
