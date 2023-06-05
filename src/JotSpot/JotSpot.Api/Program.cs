@@ -11,5 +11,3 @@ app.AddRootEndpoints();
 app.AddJotsEndpoints();
 
 app.Run();
-
-public partial class Program { }

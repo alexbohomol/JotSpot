@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace JotSpot.Api.Tests;
 
-public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
+public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>
 {
     private readonly HttpClient _sutClient;
     
     public JotsEndpointsTests()
     {
-        var factory = new WebApplicationFactory<Program>()
+        var factory = new WebApplicationFactory<IApiMarker>()
             .WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
