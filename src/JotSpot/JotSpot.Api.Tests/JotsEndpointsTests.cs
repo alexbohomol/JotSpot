@@ -7,6 +7,7 @@ namespace JotSpot.Api.Tests;
 
 public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>
 {
+    private const string JotsApi = "jots";
     private readonly HttpClient _sutClient;
     
     public JotsEndpointsTests()
@@ -27,7 +28,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task GetJots_ReturnsOk_EmptyList()
     {
         // Act
-        var msg = await _sutClient.GetAsync("jots");
+        var msg = await _sutClient.GetAsync(JotsApi);
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -46,7 +47,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         var (_, jot3) = await CreateJotAsync(new JotRequest("title #3", "text #3"));
         
         // Act
-        var msg = await _sutClient.GetAsync("jots");
+        var msg = await _sutClient.GetAsync(JotsApi);
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -121,7 +122,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         getMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         
         // Act
-        var delMsg = await _sutClient.DeleteAsync($"jots/{created.Id}");
+        var delMsg = await _sutClient.DeleteAsync($"{JotsApi}/{created.Id}");
         
         // Assert
         delMsg.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -129,7 +130,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         var body = await delMsg.Content.ReadAsStringAsync();
         body.Should().BeEmpty();
         
-        var chkMsg = await _sutClient.GetAsync($"jots/{created.Id}");
+        var chkMsg = await _sutClient.GetAsync($"{JotsApi}/{created.Id}");
         chkMsg.StatusCode.Should().Be(HttpStatusCode.NotFound);
         chkMsg.Content.Should().NotBeNull();
     }
@@ -138,7 +139,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task DeleteJot_ReturnsNotFound()
     {
         // Act
-        var msg = await _sutClient.DeleteAsync($"jots/{Guid.Empty}");
+        var msg = await _sutClient.DeleteAsync($"{JotsApi}/{Guid.Empty}");
         
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -162,7 +163,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         var update = new JotRequest("updated title", "updated text");
         
         // Act
-        var putMsg = await _sutClient.PutAsync($"jots/{created.Id}", JsonContent.Create(update));
+        var putMsg = await _sutClient.PutAsync($"{JotsApi}/{created.Id}", JsonContent.Create(update));
         
         // Assert
         putMsg.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -186,7 +187,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         var request = new JotRequest("initial title", "initial text");
         
         // Act
-        var msg = await _sutClient.PutAsync($"jots/{Guid.Empty}", JsonContent.Create(request));
+        var msg = await _sutClient.PutAsync($"{JotsApi}/{Guid.Empty}", JsonContent.Create(request));
         
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -197,7 +198,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
 
     private async Task<(HttpResponseMessage, JotResponse)> CreateJotAsync(JotRequest request)
     {
-        var message = await _sutClient.PostAsJsonAsync("jots", request);
+        var message = await _sutClient.PostAsJsonAsync(JotsApi, request);
         
         var created = await message.Content.ReadFromJsonAsync<JotResponse>();
 
@@ -206,7 +207,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
 
     private async Task<(HttpResponseMessage, JotResponse)> GetJotByIdAsync(Guid id)
     {
-        var message = await _sutClient.GetAsync($"jots/{id}");
+        var message = await _sutClient.GetAsync($"{JotsApi}/{id}");
 
         var jot = message.IsSuccessStatusCode 
             ? await message.Content.ReadFromJsonAsync<JotResponse>()
