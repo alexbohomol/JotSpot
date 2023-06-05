@@ -3,7 +3,7 @@ namespace JotSpot.Api.Tests;
 public class HealthCheckTests : IntegrationTest
 {
     [Fact]
-    public async Task GetRoot_Returns_HelloWorld()
+    public async Task GetHealth_ReturnsOk_Healthy()
     {
         // Act
         var msg = await SutClient.GetAsync("health");

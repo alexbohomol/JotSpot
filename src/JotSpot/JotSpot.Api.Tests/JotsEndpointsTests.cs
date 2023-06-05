@@ -1,4 +1,5 @@
-using JotSpot.Api.Endpoints;
+using JotSpot.Api.Handlers;
+using JotSpot.Api.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 
@@ -6,6 +7,7 @@ namespace JotSpot.Api.Tests;
 
 public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>
 {
+    private const string JotsApi = "jots";
     private readonly HttpClient _sutClient;
     
     public JotsEndpointsTests()
@@ -15,7 +17,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddSingleton<Jots.IRepository, RepositoryMock>();
+                    services.AddSingleton<IRepository, RepositoryMock>();
                 });
             });
         
@@ -26,13 +28,13 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task GetJots_ReturnsOk_EmptyList()
     {
         // Act
-        var msg = await _sutClient.GetAsync("jots");
+        var msg = await _sutClient.GetAsync(JotsApi);
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
         msg.Content.Should().NotBeNull();
         
-        var jots = await msg.Content.ReadFromJsonAsync<Jots.Response[]>();
+        var jots = await msg.Content.ReadFromJsonAsync<JotResponse[]>();
         jots.Should().BeEmpty();
     }
 
@@ -40,18 +42,18 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task GetJots_ReturnsOk_ListOfJots()
     {
         // Arrange
-        var (_, jot1) = await CreateJotAsync(new Jots.Request("title #1", "text #1"));
-        var (_, jot2) = await CreateJotAsync(new Jots.Request("title #2", "text #2"));
-        var (_, jot3) = await CreateJotAsync(new Jots.Request("title #3", "text #3"));
+        var (_, jot1) = await CreateJotAsync(new JotRequest("title #1", "text #1"));
+        var (_, jot2) = await CreateJotAsync(new JotRequest("title #2", "text #2"));
+        var (_, jot3) = await CreateJotAsync(new JotRequest("title #3", "text #3"));
         
         // Act
-        var msg = await _sutClient.GetAsync("jots");
+        var msg = await _sutClient.GetAsync(JotsApi);
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
         msg.Content.Should().NotBeNull();
         
-        var jots = await msg.Content.ReadFromJsonAsync<Jots.Response[]>();
+        var jots = await msg.Content.ReadFromJsonAsync<JotResponse[]>();
         jots.Should().HaveCount(3);
         jots.Should().Contain(new[] { jot1, jot2, jot3 });
     }
@@ -60,7 +62,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task PostJot_ReturnsCreated()
     {
         // Arrange
-        var request = new Jots.Request("test title", "test text");
+        var request = new JotRequest("test title", "test text");
 
         // Act
         var (msg, created) = await CreateJotAsync(request);
@@ -82,7 +84,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task GetJot_ReturnsAvailableJot()
     {
         // Arrange
-        var request = new Jots.Request("test title", "test text");
+        var request = new JotRequest("test title", "test text");
         var (_, created) = await CreateJotAsync(request);
 
         // Act
@@ -113,14 +115,14 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task DeleteJot_DeletesAvailableJot()
     {
         // Arrange
-        var request = new Jots.Request("test title", "test text");
+        var request = new JotRequest("test title", "test text");
         var (_, created) = await CreateJotAsync(request);
 
         var (getMsg, _) = await GetJotByIdAsync(created.Id);
         getMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         
         // Act
-        var delMsg = await _sutClient.DeleteAsync($"jots/{created.Id}");
+        var delMsg = await _sutClient.DeleteAsync($"{JotsApi}/{created.Id}");
         
         // Assert
         delMsg.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -128,7 +130,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         var body = await delMsg.Content.ReadAsStringAsync();
         body.Should().BeEmpty();
         
-        var chkMsg = await _sutClient.GetAsync($"jots/{created.Id}");
+        var chkMsg = await _sutClient.GetAsync($"{JotsApi}/{created.Id}");
         chkMsg.StatusCode.Should().Be(HttpStatusCode.NotFound);
         chkMsg.Content.Should().NotBeNull();
     }
@@ -137,7 +139,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task DeleteJot_ReturnsNotFound()
     {
         // Act
-        var msg = await _sutClient.DeleteAsync($"jots/{Guid.Empty}");
+        var msg = await _sutClient.DeleteAsync($"{JotsApi}/{Guid.Empty}");
         
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -150,7 +152,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task PutJot_UpdatesAvailableJot()
     {
         // Arrange
-        var initial = new Jots.Request("initial title", "initial text");
+        var initial = new JotRequest("initial title", "initial text");
         
         var (pstMsg, created) = await CreateJotAsync(initial);
         pstMsg.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -158,16 +160,16 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         var (getMsg, _) = await GetJotByIdAsync(created.Id);
         getMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         
-        var update = new Jots.Request("updated title", "updated text");
+        var update = new JotRequest("updated title", "updated text");
         
         // Act
-        var putMsg = await _sutClient.PutAsync($"jots/{created.Id}", JsonContent.Create(update));
+        var putMsg = await _sutClient.PutAsync($"{JotsApi}/{created.Id}", JsonContent.Create(update));
         
         // Assert
         putMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         putMsg.Content.Should().NotBeNull();
         
-        var updated = await putMsg.Content.ReadFromJsonAsync<Jots.Response>();
+        var updated = await putMsg.Content.ReadFromJsonAsync<JotResponse>();
         updated.Should().NotBeNull();
         updated.Should().BeEquivalentTo(update);
         updated!.Id.Should().NotBeEmpty();
@@ -182,10 +184,10 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task PutJot_ReturnsNotFound()
     {
         // Assert
-        var request = new Jots.Request("initial title", "initial text");
+        var request = new JotRequest("initial title", "initial text");
         
         // Act
-        var msg = await _sutClient.PutAsync($"jots/{Guid.Empty}", JsonContent.Create(request));
+        var msg = await _sutClient.PutAsync($"{JotsApi}/{Guid.Empty}", JsonContent.Create(request));
         
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -194,35 +196,35 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         body.Should().BeEmpty();
     }
 
-    private async Task<(HttpResponseMessage, Jots.Response)> CreateJotAsync(Jots.Request request)
+    private async Task<(HttpResponseMessage, JotResponse)> CreateJotAsync(JotRequest request)
     {
-        var message = await _sutClient.PostAsJsonAsync("jots", request);
+        var message = await _sutClient.PostAsJsonAsync(JotsApi, request);
         
-        var created = await message.Content.ReadFromJsonAsync<Jots.Response>();
+        var created = await message.Content.ReadFromJsonAsync<JotResponse>();
 
         return (message, created!);
     }
 
-    private async Task<(HttpResponseMessage, Jots.Response)> GetJotByIdAsync(Guid id)
+    private async Task<(HttpResponseMessage, JotResponse)> GetJotByIdAsync(Guid id)
     {
-        var message = await _sutClient.GetAsync($"jots/{id}");
+        var message = await _sutClient.GetAsync($"{JotsApi}/{id}");
 
         var jot = message.IsSuccessStatusCode 
-            ? await message.Content.ReadFromJsonAsync<Jots.Response>()
+            ? await message.Content.ReadFromJsonAsync<JotResponse>()
             : null;
         
         return (message, jot!);
     }
     
-    private class RepositoryMock : Jots.IRepository
+    private class RepositoryMock : IRepository
     {
-        private readonly List<Jots.Jot> _store = new();
+        private readonly List<Jot> _store = new();
 
-        public Jots.Jot[] GetAll() => _store.ToArray();
+        public Jot[] GetAll() => _store.ToArray();
 
-        public void Add(Jots.Jot jot) => _store.Add(jot);
+        public void Add(Jot jot) => _store.Add(jot);
 
-        public Jots.Jot? GetById(Guid id) => _store.FirstOrDefault(x => x.Id == id);
+        public Jot? GetById(Guid id) => _store.FirstOrDefault(x => x.Id == id);
 
         public bool Delete(Guid id)
         {
