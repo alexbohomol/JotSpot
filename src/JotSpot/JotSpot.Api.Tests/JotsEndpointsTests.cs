@@ -1,3 +1,4 @@
+using Bogus;
 using JotSpot.Api.Handlers;
 using JotSpot.Api.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -42,9 +43,9 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task GetJots_ReturnsOk_ListOfJots()
     {
         // Arrange
-        var (_, jot1) = await CreateJotAsync(new JotRequest("title #1", "text #1"));
-        var (_, jot2) = await CreateJotAsync(new JotRequest("title #2", "text #2"));
-        var (_, jot3) = await CreateJotAsync(new JotRequest("title #3", "text #3"));
+        var (_, jot1) = await CreateJotAsync(JotRequests.New);
+        var (_, jot2) = await CreateJotAsync(JotRequests.New);
+        var (_, jot3) = await CreateJotAsync(JotRequests.New);
         
         // Act
         var msg = await _sutClient.GetAsync(JotsApi);
@@ -62,7 +63,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task PostJot_ReturnsCreated()
     {
         // Arrange
-        var request = new JotRequest("test title", "test text");
+        var request = JotRequests.New;
 
         // Act
         var (msg, created) = await CreateJotAsync(request);
@@ -84,7 +85,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task GetJot_ReturnsAvailableJot()
     {
         // Arrange
-        var request = new JotRequest("test title", "test text");
+        var request = JotRequests.New;
         var (_, created) = await CreateJotAsync(request);
 
         // Act
@@ -115,7 +116,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task DeleteJot_DeletesAvailableJot()
     {
         // Arrange
-        var request = new JotRequest("test title", "test text");
+        var request = JotRequests.New;
         var (_, created) = await CreateJotAsync(request);
 
         var (getMsg, _) = await GetJotByIdAsync(created.Id);
@@ -152,15 +153,13 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task PutJot_UpdatesAvailableJot()
     {
         // Arrange
-        var initial = new JotRequest("initial title", "initial text");
-        
-        var (pstMsg, created) = await CreateJotAsync(initial);
+        var (pstMsg, created) = await CreateJotAsync(JotRequests.New);
         pstMsg.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var (getMsg, _) = await GetJotByIdAsync(created.Id);
         getMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         
-        var update = new JotRequest("updated title", "updated text");
+        var update = JotRequests.New;
         
         // Act
         var putMsg = await _sutClient.PutAsync($"{JotsApi}/{created.Id}", JsonContent.Create(update));
@@ -184,7 +183,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
     public async Task PutJot_ReturnsNotFound()
     {
         // Assert
-        var request = new JotRequest("initial title", "initial text");
+        var request = JotRequests.New;
         
         // Act
         var msg = await _sutClient.PutAsync($"{JotsApi}/{Guid.Empty}", JsonContent.Create(request));
@@ -196,7 +195,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         body.Should().BeEmpty();
     }
 
-    private async Task<(HttpResponseMessage, JotResponse)> CreateJotAsync(JotRequest request)
+    private async Task<(HttpResponseMessage, JotResponse)> CreateJotAsync(Models.JotRequest request)
     {
         var message = await _sutClient.PostAsJsonAsync(JotsApi, request);
         
@@ -233,4 +232,15 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
             return jot is not null && _store.Remove(jot);
         }
     }
+}
+
+internal static class JotRequests
+{
+    private static readonly Faker<JotRequest> Faker = new Faker<JotRequest>()
+        .CustomInstantiator(f => 
+            new JotRequest(
+                f.Random.Words(5),
+                f.Random.Words(10)));
+    
+    public static JotRequest New => Faker.Generate();
 }
