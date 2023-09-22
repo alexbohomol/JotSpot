@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotSpot.Api.Tests", "JotSpo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Api", "Identity.Api\Identity.Api.csproj", "{51FAFFCB-0FCC-49EC-AC45-61D8BA3E6326}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Api.Tests", "Identity.Api.Tests\Identity.Api.Tests.csproj", "{6811B00D-D48E-4CF2-BF6A-1C4609874D02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{51FAFFCB-0FCC-49EC-AC45-61D8BA3E6326}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51FAFFCB-0FCC-49EC-AC45-61D8BA3E6326}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51FAFFCB-0FCC-49EC-AC45-61D8BA3E6326}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6811B00D-D48E-4CF2-BF6A-1C4609874D02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6811B00D-D48E-4CF2-BF6A-1C4609874D02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6811B00D-D48E-4CF2-BF6A-1C4609874D02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6811B00D-D48E-4CF2-BF6A-1C4609874D02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +48,6 @@ Global
 		{813D6A4E-C3C1-45F6-8C43-069210EC0DA8} = {7EB22F77-432E-421D-A85D-DD1DCC4E32EA}
 		{66E317BC-11BB-4304-B5E0-930A6B1A2AA1} = {A10604C8-03F7-4AD5-BA5D-A956E3E56392}
 		{51FAFFCB-0FCC-49EC-AC45-61D8BA3E6326} = {7EB22F77-432E-421D-A85D-DD1DCC4E32EA}
+		{6811B00D-D48E-4CF2-BF6A-1C4609874D02} = {A10604C8-03F7-4AD5-BA5D-A956E3E56392}
 	EndGlobalSection
 EndGlobal
