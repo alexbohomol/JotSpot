@@ -61,6 +61,8 @@ public class AuthController : ControllerBase
     }
 
     // grab user from storage or API, but mock for now
-    private User ValidateUserCredentials(string? userName, string? password) =>
-        new(1, userName ?? string.Empty, "Alex", "Bohomol", "Kyiv");
+    private User? ValidateUserCredentials(string? userName, string? password) =>
+        userName == "alex@jotspot.com" && password == "1234567"
+            ? new(1, userName, "Alex", "Bohomol", "Kyiv")
+            : null;
 }
