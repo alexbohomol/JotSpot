@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace JotSpot.Api.Controllers;
+namespace Identity.Api.Controllers;
 
 [Route("api/{controller}")]
 [ApiController]
@@ -64,12 +64,3 @@ public class AuthController : ControllerBase
     private User ValidateUserCredentials(string? userName, string? password) =>
         new(1, userName ?? string.Empty, "Alex", "Bohomol", "Kyiv");
 }
-
-record User(
-    int UserId,
-    string Login,
-    string FirstName,
-    string LastName,
-    string City);
-
-public record TokenRequest(string? Login, string? Password);
