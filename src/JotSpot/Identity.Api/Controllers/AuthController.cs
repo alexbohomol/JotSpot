@@ -46,13 +46,15 @@ public class AuthController : ControllerBase
             new Claim("family_name", user.LastName),
             new Claim("city", user.City),
         };
+
+        var issuedAt = DateTime.UtcNow;
         
         var jwtSecurityToken = new JwtSecurityToken(
             _configuration["Authentication:Issuer"],
             _configuration["Authentication:Audience"],
             userClaims,
-            DateTime.UtcNow,
-            DateTime.UtcNow.AddHours(1),
+            issuedAt,
+            issuedAt.AddHours(1),
             signingCredentials);
         
         var tokenToReturn = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);

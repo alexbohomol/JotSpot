@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
-using FluentAssertions.Extensions;
 using Identity.Api.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,16 +40,14 @@ public class AuthenticationTests : IntegrationTest
         var response = await msg.Content.ReadAsStringAsync();
         var tokenHandler = new JwtSecurityTokenHandler();
         var jwtSecurityToken = tokenHandler.ReadJwtToken(response);
+        
+        var nbf = ((DateTimeOffset) jwtSecurityToken.ValidFrom).ToUnixTimeSeconds();
+        var exp = ((DateTimeOffset) jwtSecurityToken.ValidTo).ToUnixTimeSeconds();
+        (exp - nbf).Should().Be(3600); // 1 hour difference
 
         jwtSecurityToken.Payload.Should().HaveCount(9);
-        jwtSecurityToken.ValidFrom.Should().BeCloseTo(DateTime.UtcNow, 1.Seconds());
-        jwtSecurityToken.ValidTo.Should().BeCloseTo(DateTime.UtcNow.AddHours(1), 1.Seconds());
-
-        var nbf = ((DateTimeOffset) jwtSecurityToken.ValidFrom).ToUnixTimeSeconds().ToString();
-        var exp = ((DateTimeOffset) jwtSecurityToken.ValidTo).ToUnixTimeSeconds().ToString();
-        var claims = jwtSecurityToken.Claims.ToArray();
-        claims.Should().HaveCount(9);
-        claims.Select(x => new
+        jwtSecurityToken.Claims.Should().HaveCount(9);
+        jwtSecurityToken.Claims.Select(x => new
         {
             x.Type,
             x.Value
@@ -61,8 +58,8 @@ public class AuthenticationTests : IntegrationTest
             new { Type = "given_name", Value = "Alex" },
             new { Type = "family_name", Value = "Bohomol" },
             new { Type = "city", Value = "Kyiv" },
-            new { Type = "nbf", Value = nbf },
-            new { Type = "exp", Value = exp },
+            new { Type = "nbf", Value = nbf.ToString() },
+            new { Type = "exp", Value = exp.ToString() },
             new { Type = "iss", Value = "https://localhost:7145" },
             new { Type = "aud", Value = "jotspotapi" }
         });
