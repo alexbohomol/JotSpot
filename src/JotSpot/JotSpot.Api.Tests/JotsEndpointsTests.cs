@@ -1,19 +1,25 @@
 using Bogus;
+using Identity.Api.Controllers;
 using JotSpot.Api.Handlers;
 using JotSpot.Api.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using JotSpotApi = JotSpot.Api.IApiMarker;
+using IdentityApi = Identity.Api.IApiMarker;
 
 namespace JotSpot.Api.Tests;
 
-public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker>>
+public class JotsEndpointsTests : 
+    IClassFixture<WebApplicationFactory<JotSpotApi>>,
+    IClassFixture<WebApplicationFactory<IdentityApi>>
 {
     private const string JotsApi = "jots";
     private readonly HttpClient _sutClient;
-    
+    private readonly HttpClient _idClient;
+
     public JotsEndpointsTests()
     {
-        var factory = new WebApplicationFactory<IApiMarker>()
+        var jotSpotApiFactory = new WebApplicationFactory<IApiMarker>()
             .WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
@@ -22,12 +28,48 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
                 });
             });
         
-        _sutClient = factory.CreateClient();
+        _sutClient = jotSpotApiFactory.CreateClient();
+
+        var identityApiFactory = new WebApplicationFactory<Identity.Api.IApiMarker>();
+        _idClient = identityApiFactory.CreateClient();
+    }
+    
+    [Fact]
+    public async Task GetJots_ReturnsUnauthorized_Unauthenticated()
+    {
+        // Arrange
+        // we do not authenticate here
+        
+        // Act
+        var msg = await _sutClient.GetAsync(JotsApi);
+
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
+    }
+    
+    [Fact]
+    public async Task GetJots_ReturnsUnauthorized_InvalidCredentials()
+    {
+        // Arrange
+        await RequestAuthorizationFor(TokenRequests.InvalidCredentials);
+
+        // Act
+        var msg = await _sutClient.GetAsync(JotsApi);
+
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
     }
     
     [Fact]
     public async Task GetJots_ReturnsOk_EmptyList()
     {
+        // Arrange
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
+
         // Act
         var msg = await _sutClient.GetAsync(JotsApi);
 
@@ -46,6 +88,7 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         var (_, jot1) = await CreateJotAsync(JotRequests.New);
         var (_, jot2) = await CreateJotAsync(JotRequests.New);
         var (_, jot3) = await CreateJotAsync(JotRequests.New);
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
         
         // Act
         var msg = await _sutClient.GetAsync(JotsApi);
@@ -214,6 +257,16 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
         
         return (message, jot!);
     }
+
+    private async Task RequestAuthorizationFor(TokenRequest tokenRequest)
+    {
+        var tokenMsg = await _idClient.PostAsJsonAsync("api/auth/token", tokenRequest);
+        if (tokenMsg.IsSuccessStatusCode)
+        {
+            var tokenString = await tokenMsg.Content.ReadAsStringAsync();
+            _sutClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenString}");
+        }
+    }
     
     private class RepositoryMock : IRepository
     {
@@ -232,6 +285,12 @@ public class JotsEndpointsTests : IClassFixture<WebApplicationFactory<IApiMarker
             return jot is not null && _store.Remove(jot);
         }
     }
+}
+
+internal static class TokenRequests
+{
+    public static TokenRequest ValidCredentials => new("alex@jotspot.com", "1234567");
+    public static TokenRequest InvalidCredentials => new("blah-blah", "blah-blah");
 }
 
 internal static class JotRequests

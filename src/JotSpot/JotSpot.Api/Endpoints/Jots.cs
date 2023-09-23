@@ -8,7 +8,7 @@ public static class Jots
     {
         var jots = app.MapGroup("/jots");
         
-        jots.MapGet("", GetAllJots);
+        jots.MapGet("", GetAllJots).RequireAuthorization();
         jots.MapPost("", CreateJot);
         jots.MapGet("{id}", GetJot);
         jots.MapDelete("{id}", DeleteJot);

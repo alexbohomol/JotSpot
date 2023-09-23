@@ -26,6 +26,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\JotSpot.Api\JotSpot.Api.csproj" />
+      <ProjectReference Include="..\Identity.Api\Identity.Api.csproj" />
     </ItemGroup>
 
 </Project>
