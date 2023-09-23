@@ -9,14 +9,13 @@ namespace Identity.Api.Tests;
 public class AuthenticationTests : IntegrationTest
 {
     private const string GetTokenUrl = "api/auth/token";
+    private const string Login = "alex@jotspot.com";
 
     [Fact]
     public async Task GetToken_ReturnsUnauthorized()
     {
         // Act
-        var msg = await SutClient.PostAsJsonAsync(
-            GetTokenUrl, 
-            new TokenRequest("alex@jotspot.com", "123"));
+        var msg = await SutClient.PostAsJsonAsync(GetTokenUrl, new TokenRequest(Login, "123"));
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -33,9 +32,7 @@ public class AuthenticationTests : IntegrationTest
     public async Task GetToken_ReturnsOk()
     {
         // Act
-        var msg = await SutClient.PostAsJsonAsync(
-            GetTokenUrl, 
-            new TokenRequest("alex@jotspot.com", "1234567"));
+        var msg = await SutClient.PostAsJsonAsync(GetTokenUrl, new TokenRequest(Login, "1234567"));
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -49,16 +46,25 @@ public class AuthenticationTests : IntegrationTest
         jwtSecurityToken.ValidFrom.Should().BeCloseTo(DateTime.UtcNow, 1.Seconds());
         jwtSecurityToken.ValidTo.Should().BeCloseTo(DateTime.UtcNow.AddHours(1), 1.Seconds());
 
+        var nbf = ((DateTimeOffset) jwtSecurityToken.ValidFrom).ToUnixTimeSeconds().ToString();
+        var exp = ((DateTimeOffset) jwtSecurityToken.ValidTo).ToUnixTimeSeconds().ToString();
         var claims = jwtSecurityToken.Claims.ToArray();
         claims.Should().HaveCount(9);
-        claims.Should().ContainSingle(x => x.Type == "sub" && x.Value == "1");
-        claims.Should().ContainSingle(x => x.Type == "login" && x.Value == "alex@jotspot.com");
-        claims.Should().ContainSingle(x => x.Type == "given_name" && x.Value == "Alex");
-        claims.Should().ContainSingle(x => x.Type == "family_name" && x.Value == "Bohomol");
-        claims.Should().ContainSingle(x => x.Type == "city" && x.Value == "Kyiv");
-        claims.Should().ContainSingle(x => x.Type == "nbf");
-        claims.Should().ContainSingle(x => x.Type == "exp");
-        claims.Should().ContainSingle(x => x.Type == "iss" && x.Value == "https://localhost:7145");
-        claims.Should().ContainSingle(x => x.Type == "aud" && x.Value == "jotspotapi");
+        claims.Select(x => new
+        {
+            x.Type,
+            x.Value
+        }).Should().BeEquivalentTo(new[]
+        {
+            new { Type = "sub", Value = "1" },
+            new { Type = "login", Value = Login },
+            new { Type = "given_name", Value = "Alex" },
+            new { Type = "family_name", Value = "Bohomol" },
+            new { Type = "city", Value = "Kyiv" },
+            new { Type = "nbf", Value = nbf },
+            new { Type = "exp", Value = exp },
+            new { Type = "iss", Value = "https://localhost:7145" },
+            new { Type = "aud", Value = "jotspotapi" }
+        });
     }
 }
