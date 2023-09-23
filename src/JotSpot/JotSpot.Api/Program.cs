@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.Json.Serialization;
 using JotSpot.Api.Endpoints;
 using JotSpot.Api.Handlers;
 using JotSpot.Api.Infrastructure;
@@ -10,12 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();
 builder.Services.AddSingleton<IRepository, Repository>();
 
-builder.Services
-    .AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    });
+builder.Services.AddAuthorization();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -44,6 +38,5 @@ app.UseAuthorization();
 
 app.AddRootEndpoints();
 app.AddJotsEndpoints();
-app.MapControllers();
 
 app.Run();
