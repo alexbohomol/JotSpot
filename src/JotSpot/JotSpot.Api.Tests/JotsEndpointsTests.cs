@@ -13,7 +13,7 @@ public class JotsEndpointsTests :
     IClassFixture<WebApplicationFactory<JotSpotApi>>,
     IClassFixture<WebApplicationFactory<IdentityApi>>
 {
-    private const string JotsApi = "jots";
+    private const string JotsApiUrl = "jots";
     private readonly HttpClient _sutClient;
     private readonly HttpClient _idClient;
 
@@ -41,7 +41,7 @@ public class JotsEndpointsTests :
         // we do not authenticate here
         
         // Act
-        var msg = await _sutClient.GetAsync(JotsApi);
+        var msg = await _sutClient.GetAsync(JotsApiUrl);
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -56,7 +56,7 @@ public class JotsEndpointsTests :
         await RequestAuthorizationFor(TokenRequests.InvalidCredentials);
 
         // Act
-        var msg = await _sutClient.GetAsync(JotsApi);
+        var msg = await _sutClient.GetAsync(JotsApiUrl);
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -71,7 +71,7 @@ public class JotsEndpointsTests :
         await RequestAuthorizationFor(TokenRequests.ValidCredentials);
 
         // Act
-        var msg = await _sutClient.GetAsync(JotsApi);
+        var msg = await _sutClient.GetAsync(JotsApiUrl);
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -85,27 +85,58 @@ public class JotsEndpointsTests :
     public async Task GetJots_ReturnsOk_ListOfJots()
     {
         // Arrange
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
         var (_, jot1) = await CreateJotAsync(JotRequests.New);
         var (_, jot2) = await CreateJotAsync(JotRequests.New);
         var (_, jot3) = await CreateJotAsync(JotRequests.New);
-        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
         
         // Act
-        var msg = await _sutClient.GetAsync(JotsApi);
+        var msg = await _sutClient.GetAsync(JotsApiUrl);
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
         msg.Content.Should().NotBeNull();
         
-        var jots = await msg.Content.ReadFromJsonAsync<JotResponse[]>();
+        var jots = await msg.Content.ReadFromJsonAsync<JotResponse?[]>();
         jots.Should().HaveCount(3);
         jots.Should().Contain(new[] { jot1, jot2, jot3 });
+    }
+
+    [Fact]
+    public async Task PostJot_ReturnsUnauthorized_Unauthenticated()
+    {
+        // Arrange
+        // we do not authenticate here
+
+        // Act
+        var (msg, _) = await CreateJotAsync(JotRequests.New);
+        
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
+    }
+
+    [Fact]
+    public async Task PostJot_ReturnsUnauthorized_InvalidCredentials()
+    {
+        // Arrange
+        await RequestAuthorizationFor(TokenRequests.InvalidCredentials);
+
+        // Act
+        var (msg, _) = await CreateJotAsync(JotRequests.New);
+        
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
     }
 
     [Fact]
     public async Task PostJot_ReturnsCreated()
     {
         // Arrange
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
         var request = JotRequests.New;
 
         // Act
@@ -117,7 +148,7 @@ public class JotsEndpointsTests :
         
         msg.Headers.Location.Should().NotBeNull();
         msg.Headers.Location.Should().BeOfType<Uri>();
-        msg.Headers.Location!.OriginalString.Should().Contain(created.Id.ToString());
+        msg.Headers.Location!.OriginalString.Should().Contain(created!.Id.ToString());
         
         created.Should().NotBeNull();
         created.Id.Should().NotBeEmpty();
@@ -125,14 +156,46 @@ public class JotsEndpointsTests :
     }
     
     [Fact]
+    public async Task GetJot_ReturnsUnauthorized_Unauthenticated()
+    {
+        // Arrange
+        // we do not authenticate here
+
+        // Act
+        var (msg, _) = await GetJotByIdAsync(Guid.Empty);
+        
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
+    }
+    
+    [Fact]
+    public async Task GetJot_ReturnsUnauthorized_InvalidCredentials()
+    {
+        // Arrange
+        await RequestAuthorizationFor(TokenRequests.InvalidCredentials);
+
+        // Act
+        var (msg, _) = await GetJotByIdAsync(Guid.Empty);
+        
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
+    }
+    
+    [Fact]
     public async Task GetJot_ReturnsAvailableJot()
     {
         // Arrange
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
+        
         var request = JotRequests.New;
         var (_, created) = await CreateJotAsync(request);
 
         // Act
-        var (msg, jot) = await GetJotByIdAsync(created.Id);
+        var (msg, jot) = await GetJotByIdAsync(created!.Id);
         
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -146,6 +209,9 @@ public class JotsEndpointsTests :
     [Fact]
     public async Task GetJot_ReturnsNotFound()
     {
+        // Arrange
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
+        
         // Act
         var (msg, jot) = await GetJotByIdAsync(Guid.Empty);
         
@@ -156,17 +222,49 @@ public class JotsEndpointsTests :
     }
     
     [Fact]
+    public async Task DeleteJot_ReturnsUnauthorized_Unauthenticated()
+    {
+        // Arrange
+        // we do not authenticate here
+        
+        // Act
+        var msg = await _sutClient.DeleteAsync($"{JotsApiUrl}/{Guid.Empty}");
+        
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
+    }
+    
+    [Fact]
+    public async Task DeleteJot_ReturnsUnauthorized_InvalidCredentials()
+    {
+        // Arrange
+        await RequestAuthorizationFor(TokenRequests.InvalidCredentials);
+        
+        // Act
+        var msg = await _sutClient.DeleteAsync($"{JotsApiUrl}/{Guid.Empty}");
+        
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
+    }
+    
+    [Fact]
     public async Task DeleteJot_DeletesAvailableJot()
     {
         // Arrange
-        var request = JotRequests.New;
-        var (_, created) = await CreateJotAsync(request);
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
 
-        var (getMsg, _) = await GetJotByIdAsync(created.Id);
+        var (pstMsg, created) = await CreateJotAsync(JotRequests.New);
+        pstMsg.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var (getMsg, _) = await GetJotByIdAsync(created!.Id);
         getMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         
         // Act
-        var delMsg = await _sutClient.DeleteAsync($"{JotsApi}/{created.Id}");
+        var delMsg = await _sutClient.DeleteAsync($"{JotsApiUrl}/{created.Id}");
         
         // Assert
         delMsg.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -174,7 +272,7 @@ public class JotsEndpointsTests :
         var body = await delMsg.Content.ReadAsStringAsync();
         body.Should().BeEmpty();
         
-        var chkMsg = await _sutClient.GetAsync($"{JotsApi}/{created.Id}");
+        var chkMsg = await _sutClient.GetAsync($"{JotsApiUrl}/{created.Id}");
         chkMsg.StatusCode.Should().Be(HttpStatusCode.NotFound);
         chkMsg.Content.Should().NotBeNull();
     }
@@ -182,8 +280,11 @@ public class JotsEndpointsTests :
     [Fact]
     public async Task DeleteJot_ReturnsNotFound()
     {
+        // Arrange
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
+
         // Act
-        var msg = await _sutClient.DeleteAsync($"{JotsApi}/{Guid.Empty}");
+        var msg = await _sutClient.DeleteAsync($"{JotsApiUrl}/{Guid.Empty}");
         
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -193,19 +294,55 @@ public class JotsEndpointsTests :
     }
     
     [Fact]
+    public async Task PutJot_ReturnsUnauthorized_Unauthenticated()
+    {
+        // Arrange
+        // we do not authenticate here
+        
+        // Act
+        var msg = await _sutClient.PutAsync(
+            $"{JotsApiUrl}/{Guid.Empty}", 
+            JsonContent.Create(JotRequests.New));
+        
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
+    }
+    
+    [Fact]
+    public async Task PutJot_ReturnsUnauthorized_InvalidCredentials()
+    {
+        // Arrange
+        await RequestAuthorizationFor(TokenRequests.InvalidCredentials);
+        
+        // Act
+        var msg = await _sutClient.PutAsync(
+            $"{JotsApiUrl}/{Guid.Empty}", 
+            JsonContent.Create(JotRequests.New));
+        
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        msg.Content.Should().NotBeNull();
+        //TODO: AssertUnauthorizedProblemDetails
+    }
+    
+    [Fact]
     public async Task PutJot_UpdatesAvailableJot()
     {
         // Arrange
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
+
         var (pstMsg, created) = await CreateJotAsync(JotRequests.New);
         pstMsg.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var (getMsg, _) = await GetJotByIdAsync(created.Id);
+        var (getMsg, _) = await GetJotByIdAsync(created!.Id);
         getMsg.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var update = JotRequests.New;
         
         // Act
-        var putMsg = await _sutClient.PutAsync($"{JotsApi}/{created.Id}", JsonContent.Create(update));
+        var putMsg = await _sutClient.PutAsync($"{JotsApiUrl}/{created.Id}", JsonContent.Create(update));
         
         // Assert
         putMsg.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -226,10 +363,12 @@ public class JotsEndpointsTests :
     public async Task PutJot_ReturnsNotFound()
     {
         // Assert
+        await RequestAuthorizationFor(TokenRequests.ValidCredentials);
+        
         var request = JotRequests.New;
         
         // Act
-        var msg = await _sutClient.PutAsync($"{JotsApi}/{Guid.Empty}", JsonContent.Create(request));
+        var msg = await _sutClient.PutAsync($"{JotsApiUrl}/{Guid.Empty}", JsonContent.Create(request));
         
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -238,18 +377,20 @@ public class JotsEndpointsTests :
         body.Should().BeEmpty();
     }
 
-    private async Task<(HttpResponseMessage, JotResponse)> CreateJotAsync(Models.JotRequest request)
+    private async Task<(HttpResponseMessage, JotResponse?)> CreateJotAsync(JotRequest request)
     {
-        var message = await _sutClient.PostAsJsonAsync(JotsApi, request);
+        var message = await _sutClient.PostAsJsonAsync(JotsApiUrl, request);
         
-        var created = await message.Content.ReadFromJsonAsync<JotResponse>();
+        var created = message.IsSuccessStatusCode
+            ? await message.Content.ReadFromJsonAsync<JotResponse>()
+            : null;
 
-        return (message, created!);
+        return (message, created);
     }
 
     private async Task<(HttpResponseMessage, JotResponse)> GetJotByIdAsync(Guid id)
     {
-        var message = await _sutClient.GetAsync($"{JotsApi}/{id}");
+        var message = await _sutClient.GetAsync($"{JotsApiUrl}/{id}");
 
         var jot = message.IsSuccessStatusCode 
             ? await message.Content.ReadFromJsonAsync<JotResponse>()

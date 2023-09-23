@@ -8,10 +8,12 @@ public static class Jots
     {
         var jots = app.MapGroup("/jots");
         
-        jots.MapGet("", GetAllJots).RequireAuthorization();
+        jots.MapGet("", GetAllJots);
         jots.MapPost("", CreateJot);
         jots.MapGet("{id}", GetJot);
         jots.MapDelete("{id}", DeleteJot);
         jots.MapPut("{id}", UpdateJot);
+
+        jots.RequireAuthorization();
     }
 }
