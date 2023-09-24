@@ -37,15 +37,15 @@ static IResult GetToken(TokenRequest request, IConfiguration configuration)
 
     var userClaims = new []
     {
-        new Claim("sub", user.UserId.ToString()),
+        new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
         new Claim("login", user.Login),
-        new Claim("given_name", user.FirstName),
-        new Claim("family_name", user.LastName),
-        new Claim("city", user.City),
+        new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+        new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email)
     };
 
     var issuedAt = DateTime.UtcNow;
-        
+
     var jwtSecurityToken = new JwtSecurityToken(
         configuration["Authentication:Issuer"],
         configuration["Authentication:Audience"],
@@ -61,10 +61,10 @@ static IResult GetToken(TokenRequest request, IConfiguration configuration)
 
 // grab user from storage or API, but mock for now
 static User? ValidateUserCredentials(string? userName, string? password) =>
-    userName == "alex@jotspot.com" && password == "1234567"
-        ? new(1, userName, "Alex", "Bohomol", "Kyiv")
+    userName == "alex" && password == "1234567"
+        ? new(1, userName, "alex@jotspot.com", "Alex", "Bohomol")
         : null;
 
 public record TokenRequest(string? Login, string? Password);
 
-record User(int UserId, string Login, string FirstName, string LastName, string City);
+record User(int UserId, string Login, string Email, string FirstName, string LastName);

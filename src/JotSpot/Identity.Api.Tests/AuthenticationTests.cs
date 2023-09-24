@@ -6,7 +6,7 @@ namespace Identity.Api.Tests;
 public class AuthenticationTests : IntegrationTest
 {
     private const string GetTokenUrl = "api/auth/token";
-    private const string Login = "alex@jotspot.com";
+    private const string Login = "alex";
 
     [Fact]
     public async Task GetToken_ReturnsUnauthorized()
@@ -51,7 +51,7 @@ public class AuthenticationTests : IntegrationTest
             new { Type = "login", Value = Login },
             new { Type = "given_name", Value = "Alex" },
             new { Type = "family_name", Value = "Bohomol" },
-            new { Type = "city", Value = "Kyiv" },
+            new { Type = "email", Value = "alex@jotspot.com" },
             new { Type = "nbf", Value = nbf.ToString() },
             new { Type = "exp", Value = exp.ToString() },
             new { Type = "iss", Value = "https://localhost:7145" },

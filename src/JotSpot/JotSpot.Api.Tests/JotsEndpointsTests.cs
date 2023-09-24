@@ -429,7 +429,7 @@ public class JotsEndpointsTests :
 
 internal static class TokenRequests
 {
-    public static TokenRequest ValidCredentials => new("alex@jotspot.com", "1234567");
+    public static TokenRequest ValidCredentials => new("alex", "1234567");
     public static TokenRequest InvalidCredentials => new("blah-blah", "blah-blah");
 }
 
