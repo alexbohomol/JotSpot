@@ -9,8 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();
 builder.Services.AddSingleton<IRepository, Repository>();
 
-builder.Services.AddAuthorization();
-
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -29,13 +27,13 @@ builder.Services
         };
     });
 
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.MapHealthChecks("/health");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.AddRootEndpoints();
 app.AddJotsEndpoints();
 

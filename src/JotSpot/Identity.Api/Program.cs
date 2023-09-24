@@ -1,16 +1,70 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
 app.MapHealthChecks("/health");
 
-app.UseHttpsRedirection();
-
-app.MapControllers();
+app.MapPost("api/auth/token", GetToken);
 
 app.Run();
+
+static IResult GetToken(TokenRequest request, IConfiguration configuration)
+{
+    var user = ValidateUserCredentials(
+        request.Login,
+        request.Password);
+
+    if (user is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var securityKey = new SymmetricSecurityKey(
+        Encoding.ASCII.GetBytes(
+            configuration["Authentication:SecretKey"] 
+            ?? throw new Exception("SecretKey is missing in config")));
+
+    var signingCredentials = new SigningCredentials(
+        securityKey,
+        SecurityAlgorithms.HmacSha256);
+
+    var userClaims = new []
+    {
+        new Claim("sub", user.UserId.ToString()),
+        new Claim("login", user.Login),
+        new Claim("given_name", user.FirstName),
+        new Claim("family_name", user.LastName),
+        new Claim("city", user.City),
+    };
+
+    var issuedAt = DateTime.UtcNow;
+        
+    var jwtSecurityToken = new JwtSecurityToken(
+        configuration["Authentication:Issuer"],
+        configuration["Authentication:Audience"],
+        userClaims,
+        issuedAt,
+        issuedAt.AddHours(1),
+        signingCredentials);
+        
+    var tokenToReturn = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+        
+    return Results.Text(tokenToReturn);
+}
+
+// grab user from storage or API, but mock for now
+static User? ValidateUserCredentials(string? userName, string? password) =>
+    userName == "alex@jotspot.com" && password == "1234567"
+        ? new(1, userName, "Alex", "Bohomol", "Kyiv")
+        : null;
+
+public record TokenRequest(string? Login, string? Password);
+
+record User(int UserId, string Login, string FirstName, string LastName, string City);

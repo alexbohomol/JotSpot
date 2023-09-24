@@ -1,5 +1,4 @@
 using Bogus;
-using Identity.Api.Controllers;
 using JotSpot.Api.Handlers;
 using JotSpot.Api.Models;
 using Microsoft.AspNetCore.Mvc.Testing;

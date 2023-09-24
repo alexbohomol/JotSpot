@@ -1,7 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
-using Identity.Api.Controllers;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Api.Tests;
 
@@ -19,12 +17,8 @@ public class AuthenticationTests : IntegrationTest
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         msg.Content.Should().NotBeNull();
-
-        var response = await msg.Content.ReadFromJsonAsync<ProblemDetails>();
-        response.Should().NotBeNull();
-        response!.Type.Should().Be("https://tools.ietf.org/html/rfc7235#section-3.1");
-        response.Title.Should().Be(HttpStatusCode.Unauthorized.ToString());
-        response.Status.Should().Be((int?)HttpStatusCode.Unauthorized);
+        var response = await msg.Content.ReadAsStringAsync();
+        response.Should().BeEmpty();
     }
     
     [Fact]
