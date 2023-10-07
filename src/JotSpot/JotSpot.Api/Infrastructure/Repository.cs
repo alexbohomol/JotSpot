@@ -1,4 +1,3 @@
-using JotSpot.Api.Handlers;
 using JotSpot.Api.Models;
 
 namespace JotSpot.Api.Infrastructure;

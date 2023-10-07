@@ -1,6 +1,6 @@
 ﻿using System.Text;
+using JotSpot.Api;
 using JotSpot.Api.Endpoints;
-using JotSpot.Api.Handlers;
 using JotSpot.Api.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
