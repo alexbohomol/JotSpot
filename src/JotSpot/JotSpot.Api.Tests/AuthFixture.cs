@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Testing;
-
 namespace JotSpot.Api.Tests;
 
 public class AuthFixture : IAsyncLifetime

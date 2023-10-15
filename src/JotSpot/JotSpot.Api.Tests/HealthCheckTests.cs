@@ -1,6 +1,6 @@
 namespace JotSpot.Api.Tests;
 
-public class HealthCheckTests : IntegrationTest
+public class HealthCheckTests : JotSpotApiTest
 {
     [Fact]
     public async Task GetHealth_ReturnsOk_Healthy()
