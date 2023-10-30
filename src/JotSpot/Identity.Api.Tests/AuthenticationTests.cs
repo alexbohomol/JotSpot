@@ -8,11 +8,50 @@ public class AuthenticationTests : IntegrationTest
     private const string GetTokenUrl = "api/auth/token";
     private const string Login = "alex";
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("u")]
+    [InlineData("us")]
+    [InlineData("usr")]
+    [InlineData("use@")]
+    [InlineData("UserUserUserUserUser1")]
+    public async Task GetToken_InvalidUserName_ReturnsBadRequest(string userName)
+    {
+        // Act
+        var msg = await SutClient.PostAsJsonAsync(GetTokenUrl, new TokenRequest(userName, "123"));
+
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        msg.Content.Should().NotBeNull();
+        var response = await msg.Content.ReadAsStringAsync();
+        response.Should().BeEmpty();
+    }
+    
+    [Theory]
+    [InlineData("")]
+    [InlineData("p")]
+    [InlineData("pa")]
+    [InlineData("pas")]
+    [InlineData("pass")]
+    [InlineData("passw")]
+    [InlineData("passwo")]
+    public async Task GetToken_InvalidPassword_ReturnsBadRequest(string password)
+    {
+        // Act
+        var msg = await SutClient.PostAsJsonAsync(GetTokenUrl, new TokenRequest(Login, password));
+
+        // Assert
+        msg.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        msg.Content.Should().NotBeNull();
+        var response = await msg.Content.ReadAsStringAsync();
+        response.Should().BeEmpty();
+    }
+    
     [Fact]
     public async Task GetToken_ReturnsUnauthorized()
     {
         // Act
-        var msg = await SutClient.PostAsJsonAsync(GetTokenUrl, new TokenRequest(Login, "123"));
+        var msg = await SutClient.PostAsJsonAsync(GetTokenUrl, new TokenRequest(Login, "12345678"));
 
         // Assert
         msg.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

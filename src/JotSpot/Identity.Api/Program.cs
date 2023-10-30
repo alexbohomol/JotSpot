@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FluentValidation;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,13 @@ app.Run();
 
 static IResult GetToken(TokenRequest request, IConfiguration configuration)
 {
+    var validator = new TokenRequestValidator();
+    var validationResult = validator.Validate(request);
+    if (validationResult.Errors.Any())
+    {
+        return Results.BadRequest();
+    }
+    
     var user = ValidateUserCredentials(
         request.Login,
         request.Password);
@@ -66,5 +74,14 @@ static User? ValidateUserCredentials(string? userName, string? password) =>
         : null;
 
 public record TokenRequest(string? Login, string? Password);
+
+internal class TokenRequestValidator : AbstractValidator<TokenRequest>
+{
+    public TokenRequestValidator()
+    {
+        RuleFor(x => x.Login).NotEmpty().Length(4, 20).Matches("^[a-zA-Z0-9]*$");
+        RuleFor(x => x.Password).NotEmpty().MinimumLength(7);
+    }
+}
 
 record User(int UserId, string Login, string Email, string FirstName, string LastName);
