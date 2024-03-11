@@ -6,10 +6,15 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DOTNET_VERSION: 8.0.x
+
 jobs:
+
   CI:
-    name: CI Checks
+    name: Build & Test
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -17,13 +22,56 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      run: dotnet restore src/JotSpot/JotSpot.sln
+      working-directory: src/JotSpot
+      run: dotnet restore
 
     - name: Build Solution
-      run: dotnet build src/JotSpot/JotSpot.sln --no-restore
+      working-directory: src/JotSpot
+      run: dotnet build --no-restore
 
     - name: Run Tests
-      run: dotnet test src/JotSpot/JotSpot.sln --no-build --verbosity normal
+      working-directory: src/JotSpot
+      run: dotnet test --no-build --verbosity normal
+
+  code_style_checks:
+    name: Code style checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Build Solution
+      working-directory: src/JotSpot
+      run: |
+        dotnet restore
+        dotnet build --no-restore
+
+    - name: Dotnet Format Checks (Whitespaces)
+      working-directory: src/JotSpot
+      run: |
+        dotnet format whitespace \
+        --no-restore \
+        --verify-no-changes
+
+    - name: Dotnet Format Checks (Style)
+      working-directory: src/JotSpot
+      run: |
+        dotnet format style \
+        --no-restore \
+        --verify-no-changes
+
+    - name: Dotnet Format Checks (Analizers)
+      working-directory: src/JotSpot
+      run: |
+        dotnet format analyzers \
+        --no-restore \
+        --verify-no-changes
