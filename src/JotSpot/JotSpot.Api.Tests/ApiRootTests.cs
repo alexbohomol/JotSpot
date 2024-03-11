@@ -1,6 +1,6 @@
 namespace JotSpot.Api.Tests;
 
-public class ApiRootTests : IntegrationTest
+public class ApiRootTests : JotSpotApiTest
 {
     [Fact]
     public async Task GetRoot_Returns_HelloWorld()

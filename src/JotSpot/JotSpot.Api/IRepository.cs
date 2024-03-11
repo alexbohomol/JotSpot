@@ -1,6 +1,6 @@
 using JotSpot.Api.Models;
 
-namespace JotSpot.Api.Handlers;
+namespace JotSpot.Api;
 
 public interface IRepository
 {

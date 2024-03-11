@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace JotSpot.Api.Tests;
+namespace Identity.Api.Tests;
 
 public class IntegrationTest : IClassFixture<WebApplicationFactory<IApiMarker>>
 {
