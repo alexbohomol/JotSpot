@@ -50,28 +50,26 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Build Solution
+      id: build
       working-directory: src/JotSpot
       run: |
         dotnet restore
         dotnet build --no-restore
 
     - name: Dotnet Format Checks (Whitespaces)
+      if: steps.build.outcome == 'success'
       working-directory: src/JotSpot
       run: |
-        dotnet format whitespace \
-        --no-restore \
-        --verify-no-changes
+        dotnet format whitespace --no-restore --verify-no-changes
 
     - name: Dotnet Format Checks (Style)
+      if: steps.build.outcome == 'success'
       working-directory: src/JotSpot
       run: |
-        dotnet format style \
-        --no-restore \
-        --verify-no-changes
+        dotnet format style --no-restore --verify-no-changes
 
     - name: Dotnet Format Checks (Analizers)
+      if: steps.build.outcome == 'success'
       working-directory: src/JotSpot
       run: |
-        dotnet format analyzers \
-        --no-restore \
-        --verify-no-changes
+        dotnet format analyzers --no-restore --verify-no-changes
