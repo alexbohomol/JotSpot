@@ -9,7 +9,7 @@ public class ApiRootTests : JotSpotApiTest
 
         msg.StatusCode.Should().Be(HttpStatusCode.OK);
         msg.Content.Should().NotBeNull();
-        
+
         var body = await msg.Content.ReadAsStringAsync();
         body.Should().Be("Hello World!");
     }
