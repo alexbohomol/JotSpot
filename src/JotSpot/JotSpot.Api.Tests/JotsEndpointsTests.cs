@@ -41,7 +41,9 @@ public class JotsSpotApiCrudTest : JotSpotApiTest
     }
 }
 
-public class GetJotsTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authFixture), IClassFixture<AuthFixture>
+public class GetJotsTests(AuthFixture authFixture)
+    : JotsSpotApiCrudTest(authFixture),
+        IClassFixture<AuthFixture>
 {
     [Fact]
     public async Task GetJots_ReturnsUnauthorized_Unauthenticated()
@@ -110,7 +112,9 @@ public class GetJotsTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authFix
     }
 }
 
-public class PostJotsTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authFixture), IClassFixture<AuthFixture>
+public class PostJotsTests(AuthFixture authFixture)
+    : JotsSpotApiCrudTest(authFixture),
+        IClassFixture<AuthFixture>
 {
     [Fact]
     public async Task PostJot_ReturnsUnauthorized_Unauthenticated()
@@ -164,7 +168,9 @@ public class PostJotsTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authFi
     }
 }
 
-public class GetJotTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authFixture), IClassFixture<AuthFixture>
+public class GetJotTests(AuthFixture authFixture)
+    : JotsSpotApiCrudTest(authFixture),
+        IClassFixture<AuthFixture>
 {
     [Fact]
     public async Task GetJot_ReturnsUnauthorized_Unauthenticated()
@@ -231,7 +237,9 @@ public class GetJotTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authFixt
     }
 }
 
-public class DeleteJotTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authFixture), IClassFixture<AuthFixture>
+public class DeleteJotTests(AuthFixture authFixture)
+    : JotsSpotApiCrudTest(authFixture),
+        IClassFixture<AuthFixture>
 {
     [Fact]
     public async Task DeleteJot_ReturnsUnauthorized_Unauthenticated()
@@ -304,7 +312,9 @@ public class DeleteJotTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authF
     }
 }
 
-public class PutJotTests(AuthFixture authFixture) : JotsSpotApiCrudTest(authFixture), IClassFixture<AuthFixture>
+public class PutJotTests(AuthFixture authFixture)
+    : JotsSpotApiCrudTest(authFixture),
+        IClassFixture<AuthFixture>
 {
     [Fact]
     public async Task PutJot_ReturnsUnauthorized_Unauthenticated()
