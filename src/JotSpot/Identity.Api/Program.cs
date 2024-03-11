@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
 using FluentValidation;
+
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +26,7 @@ static IResult GetToken(TokenRequest request, IConfiguration configuration)
     {
         return Results.BadRequest();
     }
-    
+
     var user = ValidateUserCredentials(
         request.Login,
         request.Password);
@@ -36,14 +38,14 @@ static IResult GetToken(TokenRequest request, IConfiguration configuration)
 
     var securityKey = new SymmetricSecurityKey(
         Encoding.ASCII.GetBytes(
-            configuration["Authentication:SecretKey"] 
+            configuration["Authentication:SecretKey"]
             ?? throw new Exception("SecretKey is missing in config")));
 
     var signingCredentials = new SigningCredentials(
         securityKey,
         SecurityAlgorithms.HmacSha256);
 
-    var userClaims = new []
+    var userClaims = new[]
     {
         new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
         new Claim("login", user.Login),
@@ -61,9 +63,9 @@ static IResult GetToken(TokenRequest request, IConfiguration configuration)
         issuedAt,
         issuedAt.AddHours(1),
         signingCredentials);
-        
+
     var tokenToReturn = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-        
+
     return Results.Text(tokenToReturn);
 }
 

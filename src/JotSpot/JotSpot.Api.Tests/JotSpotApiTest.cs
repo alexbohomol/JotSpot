@@ -8,7 +8,7 @@ public class JotSpotApiTest : IClassFixture<JotSpotApiApplicationFactory>
     {
         var factory = new JotSpotApiApplicationFactory()
             .WithWebHostBuilder(InitWebHostBuilder);
-        
+
         SutClient = factory.CreateClient();
     }
 

@@ -7,7 +7,7 @@ public static class Jots
     public static void AddJotsEndpoints(this IEndpointRouteBuilder app)
     {
         var jots = app.MapGroup("/jots");
-        
+
         jots.MapGet("", GetAllJots);
         jots.MapPost("", CreateJot);
         jots.MapGet("{id}", GetJot);

@@ -26,7 +26,7 @@ public class AuthenticationTests : IntegrationTest
         var response = await msg.Content.ReadAsStringAsync();
         response.Should().BeEmpty();
     }
-    
+
     [Theory]
     [InlineData("")]
     [InlineData("p")]
@@ -46,7 +46,7 @@ public class AuthenticationTests : IntegrationTest
         var response = await msg.Content.ReadAsStringAsync();
         response.Should().BeEmpty();
     }
-    
+
     [Fact]
     public async Task GetToken_ReturnsUnauthorized()
     {
@@ -59,7 +59,7 @@ public class AuthenticationTests : IntegrationTest
         var response = await msg.Content.ReadAsStringAsync();
         response.Should().BeEmpty();
     }
-    
+
     [Fact]
     public async Task GetToken_ReturnsOk()
     {
@@ -73,9 +73,9 @@ public class AuthenticationTests : IntegrationTest
         var response = await msg.Content.ReadAsStringAsync();
         var tokenHandler = new JwtSecurityTokenHandler();
         var jwtSecurityToken = tokenHandler.ReadJwtToken(response);
-        
-        var nbf = ((DateTimeOffset) jwtSecurityToken.ValidFrom).ToUnixTimeSeconds();
-        var exp = ((DateTimeOffset) jwtSecurityToken.ValidTo).ToUnixTimeSeconds();
+
+        var nbf = ((DateTimeOffset)jwtSecurityToken.ValidFrom).ToUnixTimeSeconds();
+        var exp = ((DateTimeOffset)jwtSecurityToken.ValidTo).ToUnixTimeSeconds();
         (exp - nbf).Should().Be(3600); // 1 hour difference
 
         jwtSecurityToken.Payload.Should().HaveCount(9);
