@@ -4,6 +4,7 @@ using System.Text;
 
 using Identity.Api.UseCases.RequestToken;
 
+using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,7 +40,7 @@ static IResult GetToken(TokenRequest request, IConfiguration configuration)
     var securityKey = new SymmetricSecurityKey(
         Encoding.ASCII.GetBytes(
             configuration["Authentication:SecretKey"]
-            ?? throw new Exception("SecretKey is missing in config")));
+            ?? throw new InvalidConfigurationException("SecretKey is missing in config")));
 
     var signingCredentials = new SigningCredentials(
         securityKey,
@@ -75,4 +76,4 @@ static User? ValidateUserCredentials(string? userName, string? password) =>
         ? new(1, userName, "alex@jotspot.com", "Alex", "Bohomol")
         : null;
 
-record User(int UserId, string Login, string Email, string FirstName, string LastName);
+internal sealed record User(int UserId, string Login, string Email, string FirstName, string LastName);

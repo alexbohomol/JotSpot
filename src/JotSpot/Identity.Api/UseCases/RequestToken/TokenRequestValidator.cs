@@ -2,7 +2,7 @@ namespace Identity.Api.UseCases.RequestToken;
 
 using FluentValidation;
 
-internal class TokenRequestValidator : AbstractValidator<TokenRequest>
+internal sealed class TokenRequestValidator : AbstractValidator<TokenRequest>
 {
     public TokenRequestValidator()
     {

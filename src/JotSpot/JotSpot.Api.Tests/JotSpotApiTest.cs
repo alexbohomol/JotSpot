@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 
 public class JotSpotApiTest : IClassFixture<JotSpotApiApplicationFactory>
 {
-    protected readonly HttpClient SutClient;
+    protected HttpClient SutClient { get; }
 
     protected JotSpotApiTest()
     {

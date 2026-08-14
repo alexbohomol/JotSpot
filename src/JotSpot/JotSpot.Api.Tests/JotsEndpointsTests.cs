@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 public class JotsSpotApiCrudTest : JotSpotApiTest
 {
     protected const string JotsApiUrl = "jots";
-    protected readonly AuthFixture AuthFixture;
+    protected AuthFixture AuthFixture { get; }
 
     protected JotsSpotApiCrudTest(AuthFixture authFixture)
     {
@@ -404,7 +404,7 @@ public class PutJotTests(AuthFixture authFixture)
     }
 }
 
-internal class RepositoryMock : IRepository
+internal sealed class RepositoryMock : IRepository
 {
     private readonly List<Jot> _store = new();
 

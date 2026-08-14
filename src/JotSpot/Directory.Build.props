@@ -8,7 +8,7 @@
 
     <PropertyGroup>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <AnalysisMode>Minimum</AnalysisMode>
+        <AnalysisMode>Recommended</AnalysisMode>
         <AnalysisLevel>10.0</AnalysisLevel>
         <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
