@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Identity.Api/Identity.Api.csproj" />
+    <Project Path="JotSpot.Api/JotSpot.Api.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="Identity.Api.Tests/Identity.Api.Tests.csproj" />
+    <Project Path="JotSpot.Api.Tests/JotSpot.Api.Tests.csproj" />
+  </Folder>
+</Solution>
