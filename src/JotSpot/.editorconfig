@@ -57,5 +57,8 @@ dotnet_diagnostic.IDE0011.severity = error # Add braces
 dotnet_diagnostic.IDE0044.severity = error # Add readonly modifier
 dotnet_diagnostic.IDE0290.severity = error # Use primary constructor
 
+# Global compiler suppressions
+dotnet_diagnostic.CS1591.severity = none # Missing XML comment for publicly visible type or member
+
 [*.json]
 indent_size = 2

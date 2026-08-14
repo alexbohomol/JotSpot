@@ -2,12 +2,14 @@ namespace JotSpot.Api.Tests;
 
 using System.Net.Http.Json;
 
+using Identity.Api.UseCases.RequestToken;
+
 public class AuthFixture : IAsyncLifetime
 {
     private string? _token401;
     private string? _token200;
 
-    public void ResetAuthentication(HttpClient client) => client
+    public static void ResetAuthentication(HttpClient client) => client
         .DefaultRequestHeaders
         .Remove("Authorization");
 
@@ -39,7 +41,11 @@ public class AuthFixture : IAsyncLifetime
         _token200 = await resp200.Content.ReadAsStringAsync();
     }
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
+    }
 
     #endregion
 }
