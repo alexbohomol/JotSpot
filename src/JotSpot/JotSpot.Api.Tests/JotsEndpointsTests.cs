@@ -2,6 +2,11 @@ using JotSpot.Api.Models;
 
 namespace JotSpot.Api.Tests;
 
+using System.Net.Http.Json;
+
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
 public class JotsSpotApiCrudTest : JotSpotApiTest
 {
     protected const string JotsApiUrl = "jots";

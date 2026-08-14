@@ -1,5 +1,7 @@
 namespace JotSpot.Api.Tests;
 
+using Microsoft.AspNetCore.Hosting;
+
 public class JotSpotApiTest : IClassFixture<JotSpotApiApplicationFactory>
 {
     protected readonly HttpClient SutClient;

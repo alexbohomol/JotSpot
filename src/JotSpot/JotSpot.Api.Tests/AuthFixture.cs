@@ -1,5 +1,7 @@
 namespace JotSpot.Api.Tests;
 
+using System.Net.Http.Json;
+
 public class AuthFixture : IAsyncLifetime
 {
     private string? _token401;
