@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../../nuget.config" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="Identity.Api/Identity.Api.csproj" />
     <Project Path="JotSpot.Api/JotSpot.Api.csproj" />
