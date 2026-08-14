@@ -21,7 +21,7 @@ public class AuthFixture : IAsyncLifetime
 
     #region IAsyncLifetime
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await using var identityApiFactory = new WebApplicationFactory<Identity.Api.IApiMarker>();
         using var identityApiClient = identityApiFactory.CreateClient();
@@ -39,7 +39,7 @@ public class AuthFixture : IAsyncLifetime
         _token200 = await resp200.Content.ReadAsStringAsync();
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     #endregion
 }
