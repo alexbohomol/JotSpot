@@ -4,7 +4,7 @@ namespace Identity.Api.Tests;
 
 public class IntegrationTest : IClassFixture<WebApplicationFactory<IApiMarker>>
 {
-    protected readonly HttpClient SutClient;
+    protected HttpClient SutClient { get; }
 
     protected IntegrationTest()
     {

@@ -3,6 +3,8 @@ using System.Net.Http.Json;
 
 namespace Identity.Api.Tests;
 
+using UseCases.RequestToken;
+
 public class AuthenticationTests : IntegrationTest
 {
     private const string GetTokenUrl = "api/auth/token";

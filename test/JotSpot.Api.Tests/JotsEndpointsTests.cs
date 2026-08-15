@@ -2,10 +2,15 @@ using JotSpot.Api.Models;
 
 namespace JotSpot.Api.Tests;
 
+using System.Net.Http.Json;
+
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
 public class JotsSpotApiCrudTest : JotSpotApiTest
 {
     protected const string JotsApiUrl = "jots";
-    protected readonly AuthFixture AuthFixture;
+    protected AuthFixture AuthFixture { get; }
 
     protected JotsSpotApiCrudTest(AuthFixture authFixture)
     {
@@ -399,7 +404,9 @@ public class PutJotTests(AuthFixture authFixture)
     }
 }
 
-internal class RepositoryMock : IRepository
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
+internal sealed class RepositoryMock : IRepository
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes
 {
     private readonly List<Jot> _store = new();
 

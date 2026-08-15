@@ -5,6 +5,7 @@ using JotSpot.Api.Endpoints;
 using JotSpot.Api.Infrastructure;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,7 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.ASCII.GetBytes(
                     builder.Configuration["Authentication:SecretKey"]
-                    ?? throw new Exception("SecretKey is missing in config")))
+                    ?? throw new InvalidConfigurationException("SecretKey is missing in config")))
         };
     });
 

@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="nuget.config" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Identity.Api/Identity.Api.csproj" />
+    <Project Path="src/JotSpot.Api/JotSpot.Api.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Identity.Api.Tests/Identity.Api.Tests.csproj" />
+    <Project Path="test/JotSpot.Api.Tests/JotSpot.Api.Tests.csproj" />
+  </Folder>
+</Solution>
