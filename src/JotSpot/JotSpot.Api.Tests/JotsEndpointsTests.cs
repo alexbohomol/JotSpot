@@ -404,7 +404,9 @@ public class PutJotTests(AuthFixture authFixture)
     }
 }
 
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 internal sealed class RepositoryMock : IRepository
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes
 {
     private readonly List<Jot> _store = new();
 

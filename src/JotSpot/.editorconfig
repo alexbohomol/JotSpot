@@ -62,6 +62,7 @@ dotnet_diagnostic.CS1591.severity = none # Missing XML comment for publicly visi
 
 # Global analyser suppressions
 dotnet_diagnostic.CA1305.severity = none # Recommended - Specify IFormatProvider
+dotnet_diagnostic.CA1515.severity = none # All - Consider making public types internal
 
 [*.json]
 indent_size = 2
