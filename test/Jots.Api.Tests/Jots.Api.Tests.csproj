@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\JotSpot.Api\JotSpot.Api.csproj" />
+      <ProjectReference Include="..\..\src\Jots.Api\Jots.Api.csproj" />
       <ProjectReference Include="..\..\src\Identity.Api\Identity.Api.csproj" />
     </ItemGroup>
 

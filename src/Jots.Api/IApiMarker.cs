@@ -1,4 +1,4 @@
-namespace JotSpot.Api;
+namespace Jots.Api;
 
 /// <summary>
 /// Marker interface to be referenced from other assemblies (testing, etc.)

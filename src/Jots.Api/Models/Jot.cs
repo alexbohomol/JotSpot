@@ -1,4 +1,4 @@
-namespace JotSpot.Api.Models;
+namespace Jots.Api.Models;
 
 public class Jot
 {

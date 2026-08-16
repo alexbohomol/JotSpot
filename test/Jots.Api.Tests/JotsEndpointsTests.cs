@@ -1,11 +1,11 @@
-using JotSpot.Api.Models;
-
-namespace JotSpot.Api.Tests;
+namespace Jots.Api.Tests;
 
 using System.Net.Http.Json;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+
+using Models;
 
 public class JotsSpotApiCrudTest : JotSpotApiTest
 {

@@ -1,8 +1,8 @@
 using System.Text;
 
-using JotSpot.Api;
-using JotSpot.Api.Endpoints;
-using JotSpot.Api.Infrastructure;
+using Jots.Api;
+using Jots.Api.Endpoints;
+using Jots.Api.Infrastructure;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Protocols.Configuration;
@@ -39,7 +39,7 @@ app.MapDefaultEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.AddRootEndpoints();
-app.AddJotsEndpoints();
+RootEndpoints.AddEndpoints(app);
+JotEndpoints.AddEndpoints(app);
 
 app.Run();
