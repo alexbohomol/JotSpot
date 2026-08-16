@@ -1,6 +1,6 @@
-using JotSpot.Api.Models;
+namespace Jots.Api;
 
-namespace JotSpot.Api;
+using Models;
 
 public interface IRepository
 {

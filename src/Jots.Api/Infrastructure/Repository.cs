@@ -1,6 +1,6 @@
-using JotSpot.Api.Models;
+namespace Jots.Api.Infrastructure;
 
-namespace JotSpot.Api.Infrastructure;
+using Models;
 
 // TODO: TBD - implement later when introducing real storage
 public class Repository : IRepository

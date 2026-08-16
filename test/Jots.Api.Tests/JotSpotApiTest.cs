@@ -1,4 +1,4 @@
-namespace JotSpot.Api.Tests;
+namespace Jots.Api.Tests;
 
 using Microsoft.AspNetCore.Hosting;
 

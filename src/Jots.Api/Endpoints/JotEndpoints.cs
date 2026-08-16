@@ -1,10 +1,10 @@
-using JotSpot.Api.Models;
+namespace Jots.Api.Endpoints;
 
-namespace JotSpot.Api.Endpoints;
+using Models;
 
-public static class Jots
+public static class JotEndpoints
 {
-    public static void AddJotsEndpoints(this IEndpointRouteBuilder app)
+    public static void AddEndpoints(this IEndpointRouteBuilder app)
     {
         var jots = app.MapGroup("/jots");
 

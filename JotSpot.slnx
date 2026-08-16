@@ -7,11 +7,11 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Identity.Api/Identity.Api.csproj" />
-    <Project Path="src/JotSpot.Api/JotSpot.Api.csproj" />
+    <Project Path="src/Jots.Api/Jots.Api.csproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/Identity.Api.Tests/Identity.Api.Tests.csproj" />
-    <Project Path="test/JotSpot.Api.Tests/JotSpot.Api.Tests.csproj" />
+    <Project Path="test/Jots.Api.Tests/Jots.Api.Tests.csproj" />
   </Folder>
   <Project Path="src/JotSpot.AppHost/JotSpot.AppHost.csproj" />
   <Project Path="src/JotSpot.ServiceDefaults/JotSpot.ServiceDefaults.csproj" />

@@ -4,7 +4,7 @@ var identityApi = builder.AddProject<Projects.Identity_Api>("identity-api")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health");
 
-builder.AddProject<Projects.JotSpot_Api>("jots-api")
+builder.AddProject<Projects.Jots_Api>("jots-api")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(identityApi)

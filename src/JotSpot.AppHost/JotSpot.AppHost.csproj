@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Identity.Api\Identity.Api.csproj" />
-    <ProjectReference Include="..\JotSpot.Api\JotSpot.Api.csproj" />
+    <ProjectReference Include="..\Jots.Api\Jots.Api.csproj" />
   </ItemGroup>
 
 </Project>

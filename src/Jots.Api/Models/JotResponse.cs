@@ -1,4 +1,4 @@
-namespace JotSpot.Api.Models;
+namespace Jots.Api.Models;
 
 public record JotResponse(Guid Id, string Title, string Text)
 {
