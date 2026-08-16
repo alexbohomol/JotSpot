@@ -11,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.Services.AddHealthChecks();
 builder.Services.AddSingleton<IRepository, Repository>();
 
 builder.Services
