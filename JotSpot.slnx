@@ -13,4 +13,6 @@
     <Project Path="test/Identity.Api.Tests/Identity.Api.Tests.csproj" />
     <Project Path="test/JotSpot.Api.Tests/JotSpot.Api.Tests.csproj" />
   </Folder>
+  <Project Path="src/JotSpot.AppHost/JotSpot.AppHost.csproj" />
+  <Project Path="src/JotSpot.ServiceDefaults/JotSpot.ServiceDefaults.csproj" />
 </Solution>

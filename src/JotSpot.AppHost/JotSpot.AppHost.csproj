@@ -1,0 +1,13 @@
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.4.6">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>9a46761c-3cbb-4947-a6bb-1e3e374870ff</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Identity.Api\Identity.Api.csproj" />
+    <ProjectReference Include="..\JotSpot.Api\JotSpot.Api.csproj" />
+  </ItemGroup>
+
+</Project>
