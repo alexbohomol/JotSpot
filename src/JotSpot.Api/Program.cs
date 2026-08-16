@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 builder.Services.AddHealthChecks();
 builder.Services.AddSingleton<IRepository, Repository>();
 
@@ -34,7 +36,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.MapHealthChecks("/health");
+app.MapDefaultEndpoints();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.AddRootEndpoints();

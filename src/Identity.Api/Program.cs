@@ -9,11 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-app.MapHealthChecks("/health");
+app.MapDefaultEndpoints();
 
 app.MapPost("api/auth/token", GetToken);
 
